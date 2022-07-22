@@ -1,0 +1,404 @@
+     1                                  ;Gurjinder Singh
+     2                                  ;Dinora Blanco
+     3                                  ;CMSC313 Project 4
+     4                                  ;Spring 2022
+     5                                  ;main.asm
+     6                                  ;This program is a blend of c and assembly and pain
+     7                                  
+     8                                   
+     9                                      
+    10                                      
+    11                                      section .data
+    12                                  
+    13                                      ;Array indexes
+    14 00000000 546869732069732074-     message0 db "This is the original message.", 10, 0
+    14 00000009 6865206F726967696E-
+    14 00000012 616C206D6573736167-
+    14 0000001B 652E0A00           
+    15 0000001F 546869732069732074-     message1 db "This is the original message.", 10, 0
+    15 00000028 6865206F726967696E-
+    15 00000031 616C206D6573736167-
+    15 0000003A 652E0A00           
+    16 0000003E 546869732069732074-     message2 db "This is the original message.", 10, 0
+    16 00000047 6865206F726967696E-
+    16 00000050 616C206D6573736167-
+    16 00000059 652E0A00           
+    17 0000005D 546869732069732074-     message3 db "This is the original message.", 10, 0
+    17 00000066 6865206F726967696E-
+    17 0000006F 616C206D6573736167-
+    17 00000078 652E0A00           
+    18 0000007C 546869732069732074-     message4 db "This is the original message.", 10, 0
+    18 00000085 6865206F726967696E-
+    18 0000008E 616C206D6573736167-
+    18 00000097 652E0A00           
+    19 0000009B 546869732069732074-     message5 db "This is the original message.", 10, 0
+    19 000000A4 6865206F726967696E-
+    19 000000AD 616C206D6573736167-
+    19 000000B6 652E0A00           
+    20 000000BA 546869732069732074-     message6 db "This is the original message.", 10, 0
+    20 000000C3 6865206F726967696E-
+    20 000000CC 616C206D6573736167-
+    20 000000D5 652E0A00           
+    21 000000D9 546869732069732074-     message7 db "This is the original message.", 10, 0
+    21 000000E2 6865206F726967696E-
+    21 000000EB 616C206D6573736167-
+    21 000000F4 652E0A00           
+    22 000000F8 546869732069732074-     message8 db "This is the original message.", 10, 0
+    22 00000101 6865206F726967696E-
+    22 0000010A 616C206D6573736167-
+    22 00000113 652E0A00           
+    23 00000117 546869732069732074-     message9 db "This is the original message.", 10, 0
+    23 00000120 6865206F726967696E-
+    23 00000129 616C206D6573736167-
+    23 00000132 652E0A00           
+    24                                  
+    25                                      ;array declaration
+    26                                  array:
+    27 00000136 [0000000000000000]          dq message0
+    28 0000013E [1F00000000000000]          dq message1
+    29 00000146 [3E00000000000000]          dq message2
+    30 0000014E [5D00000000000000]          dq message3
+    31 00000156 [7C00000000000000]          dq message4
+    32 0000015E [9B00000000000000]          dq message5
+    33 00000166 [BA00000000000000]          dq message6
+    34 0000016E [D900000000000000]          dq message7
+    35 00000176 [F800000000000000]          dq message8
+    36 0000017E [1701000000000000]          dq message9
+    37                                  
+    38                                      ;printf formats
+    39                                  
+    40 00000186 256400                  format_num: db "%d", 0
+    41                                  
+    42 00000189 256300                  format_char: db "%c", 0
+    43                                  
+    44 0000018C 257300                  format_string: db "%s", 0
+    45                                      ;-Menu messages-
+    46                                  
+    47 0000018F 0A456E637279707469-     prompt_program_name: db 10,"Encryption menu options: ", 10
+    47 00000198 6F6E206D656E75206F-
+    47 000001A1 7074696F6E733A200A 
+    48                                  len_pn equ $ - prompt_program_name
+    49                                  
+    50 000001AA 73202D2073686F7720-     prompt_s: db "s - show current messages ", 10
+    50 000001B3 63757272656E74206D-
+    50 000001BC 65737361676573200A 
+    51                                  len_s equ $ - prompt_s
+    52                                  
+    53 000001C5 72202D207265616420-     prompt_r: db "r - read new message ", 10
+    53 000001CE 6E6577206D65737361-
+    53 000001D7 6765200A           
+    54                                  len_r equ $ - prompt_r
+    55                                  
+    56 000001DB 63202D206361657361-     prompt_c: db "c - caesar cipher ", 10
+    56 000001E4 722063697068657220-
+    56 000001ED 0A                 
+    57                                  len_c equ $ - prompt_c
+    58                                  
+    59 000001EE 66202D206672657175-     prompt_f: db "f - frequency decrypt ", 10
+    59 000001F7 656E63792064656372-
+    59 00000200 797074200A         
+    60                                  len_f equ $ - prompt_f
+    61                                  
+    62 00000205 71202D207175697420-     prompt_q: db "q - quit program ", 10
+    62 0000020E 70726F6772616D200A 
+    63                                  len_q equ $ - prompt_q
+    64                                  
+    65 00000217 656E746572206F7074-     prompt_user_menu_input: db "enter option letter -> ", 0
+    65 00000220 696F6E206C65747465-
+    65 00000229 72202D3E2000       
+    66                                  len_umi equ $ - prompt_user_menu_input
+    67                                  
+    68 0000022F 696E76616C6964206F-     prompt_invalid_input: db "invalid option, try again", 10
+    68 00000238 7074696F6E2C207472-
+    68 00000241 7920616761696E0A   
+    69                                  len_ii equ $ - prompt_invalid_input
+    70                                  
+    71                                      ;-read new message messages-
+    72                                  
+    73 00000249 456E746572206E6577-     prompt_r_new_message: db "Enter new message: ", 0
+    73 00000252 206D6573736167653A-
+    73 0000025B 2000               
+    74                                  len_rnm equ $ - prompt_r_new_message
+    75                                  
+    76 0000025D 696E76616C6964206D-     prompt_r_invalid_message: db "invalid message, keeping current", 10
+    76 00000266 6573736167652C206B-
+    76 0000026F 656570696E67206375-
+    76 00000278 7272656E740A       
+    77                                  len_rim equ $ - prompt_r_invalid_message
+    78                                  
+    79                                      ;-caesar cipher messages-
+    80                                  
+    81 0000027E 4E6F7420696D706C65-     prompt_c_DNF: db "Not implemented :(", 10
+    81 00000287 6D656E746564203A28-
+    81 00000290 0A                 
+    82                                  len_cDNF equ $ - prompt_c_DNF
+    83                                  
+    84                                      ;-frequency decrypt messages-
+    85                                  
+    86 00000291 456E74657220737472-     prompt_f_input: db "Enter string location: ", 0
+    86 0000029A 696E67206C6F636174-
+    86 000002A3 696F6E3A2000       
+    87                                  len_fi equ $ - prompt_f_input
+    88                                  
+    89                                      ;-quit message-
+    90                                  
+    91 000002A9 476F6F647965210A        prompt_q_message: db "Goodye!", 10
+    92                                  len_qm equ $ - prompt_q_message
+    93                                  
+    94                                  
+    95                                      ;-EE-
+    96 000002B1 546865726520697320-     prompt_EE: db "There is no easter egg, only pain. Why assembly...WHY.", 10
+    96 000002BA 6E6F20656173746572-
+    96 000002C3 206567672C206F6E6C-
+    96 000002CC 79207061696E2E2057-
+    96 000002D5 687920617373656D62-
+    96 000002DE 6C792E2E2E5748592E-
+    96 000002E7 0A                 
+    97                                  len_EE equ $ - prompt_EE
+    98                                  
+    99                                      section .bss
+   100 00000000 ??                      counter     resb 1
+   101 00000001 ??                      menu_in     resb 1
+   102                                  
+   103                                      ;used for keeping track of array pointer
+   104                                  
+   105                                      ;assign label array to store all message addresses
+   106                                  
+   107                                      section .text
+   108                                  
+   109                                      global main
+   110                                  
+   111                                      ;imports
+   112                                  ;extern printf
+   113                                  ;extern scanf
+   114                                  extern printArray
+   115                                  extern putMessage
+   116                                  extern freeup
+   117                                  extern getchar
+   118                                  extern fflush
+   119                                  
+   120                                  main:
+   121                                      
+   122 00000000 4D31C0                          xor r8, r8
+   123 00000003 4831C0                          xor rax, rax
+   124                                          ;initilize array pointers
+   125                                          ;mov rdi, format_string
+   126                                          ;mov rsi, [stringarr0]
+   127                                          ;mov rax, 0
+   128                                          ;call printf
+   129                                          ;main menu code
+   130                                          ;call print_menu
+   131 00000006 E801000000                      call print_menu
+   132 0000000B C3                              ret
+   133                                  
+   134                                  print_menu:
+   135                                          ;implement menu printing
+   136                                          ;program prompt
+   137                                  
+   138 0000000C B801000000                  mov     rax, 1              
+   139 00000011 BF01000000                  mov     rdi, 1
+   140 00000016 48BE-                       mov     rsi, prompt_program_name
+   140 00000018 [8F01000000000000] 
+   141 00000020 BA1B000000                  mov     rdx, len_pn
+   142 00000025 0F05                        syscall
+   143                                  
+   144 00000027 B801000000                  mov     rax, 1              
+   145 0000002C BF01000000                  mov     rdi, 1
+   146 00000031 48BE-                       mov     rsi, prompt_s
+   146 00000033 [AA01000000000000] 
+   147 0000003B BA1B000000                  mov     rdx, len_s
+   148 00000040 0F05                        syscall
+   149                                  
+   150 00000042 B801000000                  mov     rax, 1              
+   151 00000047 BF01000000                  mov     rdi, 1
+   152 0000004C 48BE-                       mov     rsi, prompt_r
+   152 0000004E [C501000000000000] 
+   153 00000056 BA16000000                  mov     rdx, len_r
+   154 0000005B 0F05                        syscall
+   155                                  
+   156 0000005D B801000000                  mov     rax, 1
+   157 00000062 BF01000000                  mov     rdi, 1
+   158 00000067 48BE-                       mov     rsi, prompt_c
+   158 00000069 [DB01000000000000] 
+   159 00000071 BA13000000                  mov     rdx, len_c
+   160 00000076 0F05                        syscall
+   161                                  
+   162 00000078 B801000000                  mov     rax, 1
+   163 0000007D BF01000000                  mov     rdi, 1
+   164 00000082 48BE-                       mov     rsi, prompt_f
+   164 00000084 [EE01000000000000] 
+   165 0000008C BA17000000                  mov     rdx, len_f
+   166 00000091 0F05                        syscall
+   167                                  
+   168 00000093 B801000000                  mov     rax, 1
+   169 00000098 BF01000000                  mov     rdi, 1
+   170 0000009D 48BE-                       mov     rsi, prompt_q
+   170 0000009F [0502000000000000] 
+   171 000000A7 BA12000000                  mov     rdx, len_q
+   172 000000AC 0F05                        syscall
+   173                                  
+   174 000000AE B801000000                  mov     rax, 1
+   175 000000B3 BF01000000                  mov     rdi, 1
+   176 000000B8 48BE-                       mov     rsi, prompt_user_menu_input
+   176 000000BA [1702000000000000] 
+   177 000000C2 BA18000000                  mov     rdx, len_umi
+   178 000000C7 0F05                        syscall
+   179                                  
+   180 000000C9 EB00                        jmp get_user_input
+   181                                  
+   182                                  
+   183                                  get_user_input:
+   184                                      ;implement getting user input
+   185 000000CB B800000000                  mov     rax, 0
+   186 000000D0 BF00000000                  mov     rdi, 0
+   187 000000D5 48BE-                       mov     rsi, menu_in
+   187 000000D7 [0100000000000000] 
+   188 000000DF BA01000000                  mov     rdx, 1
+   189 000000E4 0F05                        syscall
+   190                                  
+   191 000000E6 48B8-                       mov    rax, menu_in
+   191 000000E8 [0100000000000000] 
+   192                                      ;call getchar
+   193                                  
+   194 000000F0 EB00                        jmp check_user_input
+   195                                  
+   196                                  
+   197                                  check_user_input:
+   198                                      ;implement checking user input
+   199                                      ;redirects based on correct input
+   200 000000F2 80387A                      cmp [rax], BYTE'z'
+   201 000000F5 49FFC1                      inc r9
+   202 000000F8 803873                      cmp [rax], BYTE's'
+   203 000000FB 0F840C010000                je call_s
+   204 00000101 803872                      cmp [rax], BYTE'r'
+   205 00000104 0F84E0000000                je call_r
+   206 0000010A 803863                      cmp [rax], BYTE'c'
+   207 0000010D 746F                        je call_c
+   208 0000010F 803866                      cmp [rax], BYTE'f'
+   209 00000112 0F8486000000                je call_f
+   210 00000118 803871                      cmp [rax], BYTE'q'
+   211 0000011B 4983F904                    cmp r9, 4
+   212 0000011F 7410                        je ee
+   213 00000121 0F8497000000                je call_q
+   214 00000127 7529                        jne invalid_input
+   215                                  
+   216 00000129 4831C0                      xor rax, rax
+   217                                  
+   218 0000012C E9DBFEFFFF                  jmp print_menu
+   219                                  
+   220                                  ee:     ;easter egg that wont work due to assembly gods
+   221 00000131 B801000000                  mov     rax, 1
+   222 00000136 BF01000000                  mov     rdi, 1
+   223 0000013B 48BE-                       mov     rsi, prompt_EE
+   223 0000013D [B102000000000000] 
+   224 00000145 BA37000000                  mov     rdx, len_EE
+   225 0000014A 0F05                        syscall
+   226                                  
+   227                                  
+   228                                  inc_ee: ;increments counter for ee
+   229 0000014C 49FFC1                      inc r9
+   230                                  
+   231                                  
+   232                                  reset_ee:;resets ee counter
+   233 0000014F 4D31C9                      xor r9, r9
+   234                                  
+   235                                  
+   236                                  invalid_input:
+   237                                          ;Lets user know they entered an invalid input
+   238 00000152 B801000000                  mov     rax, 1
+   239 00000157 BF01000000                  mov     rdi, 1
+   240 0000015C 48BE-                       mov     rsi, prompt_invalid_input
+   240 0000015E [2F02000000000000] 
+   241 00000166 BA1A000000                  mov     rdx, len_ii
+   242 0000016B 0F05                        syscall
+   243                                          ;reset user input for safety
+   244 0000016D 4831C0                      xor rax, rax
+   245 00000170 4831FF                      xor rdi, rdi
+   246 00000173 4831F6                      xor rsi, rsi
+   247 00000176 4831D2                      xor rdx, rdx
+   248                                  
+   249 00000179 E98EFEFFFF                  jmp print_menu
+   250                                  
+   251                                  
+   252                                  call_c:
+   253                                      ;call caesar cipher that doesnt exist
+   254 0000017E B801000000                  mov     rax, 1
+   255 00000183 BF01000000                  mov     rdi, 1
+   256 00000188 48BE-                       mov     rsi, prompt_c_DNF
+   256 0000018A [7E02000000000000] 
+   257 00000192 BA13000000                  mov     rdx, len_cDNF
+   258 00000197 0F05                        syscall
+   259                                  
+   260 00000199 E96EFEFFFF                  jmp print_menu
+   261                                  
+   262                                  
+   263                                  
+   264                                  call_f:
+   265                                      ;call frequency decrypt
+   266 0000019E B801000000                  mov     rax, 1
+   267 000001A3 BF01000000                  mov     rdi, 1
+   268 000001A8 48BE-                       mov     rsi, prompt_f_input
+   268 000001AA [9102000000000000] 
+   269 000001B2 BA18000000                  mov     rdx, len_fi
+   270 000001B7 0F05                        syscall
+   271                                  
+   272 000001B9 E94EFEFFFF                  jmp print_menu
+   273                                  
+   274                                  
+   275                                  
+   276                                  
+   277                                  call_q:
+   278                                      ;call quit routine
+   279 000001BE B801000000                  mov     rax, 1
+   280 000001C3 BF01000000                  mov     rdi, 1
+   281 000001C8 48BE-                       mov     rsi, prompt_q_message
+   281 000001CA [A902000000000000] 
+   282 000001D2 BA08000000                  mov     rdx, len_qm
+   283 000001D7 0F05                        syscall
+   284                                  
+   285 000001D9 EB00                        jmp exit
+   286                                  
+   287                                  
+   288                                  exit:
+   289                                      ;exit program
+   290 000001DB E8(00000000)                call freeup
+   291 000001E0 B83C000000                  mov     rax, 60
+   292 000001E5 4831FF                      xor     rdi, rdi
+   293 000001E8 0F05                        syscall
+   294                                  
+   295                                  call_r:
+   296 000001EA E835000000                  call clear_in
+   297                                          ;uses r8 to keep track of where to store new message
+   298                                          ;passes array and index to putMessage
+   299                                          ;gets user input, WIP need to validate input
+   300 000001EF 488B3C25[36010000]          mov rdi, [array]
+   301 000001F7 4C89C6                      mov rsi, r8
+   302 000001FA E8(00000000)                call putMessage
+   303                                          ;check to see if user input is valid to increment counter
+   304 000001FF 4883F801                    cmp rax, 1
+   305 00000203 7405                        je inc_counter
+   306                                  
+   307 00000205 E902FEFFFF                  jmp print_menu
+   308                                  
+   309                                  
+   310                                      ;increment counter for next message to stor
+   311                                  inc_counter:
+   312 0000020A 49FFC0                      inc r8
+   313                                  
+   314                                  
+   315                                      ;prints all elements of array
+   316                                  call_s:
+   317 0000020D 48BF-                       mov rdi, array
+   317 0000020F [3601000000000000] 
+   318 00000217 E8(00000000)                call printArray
+   319                                  
+   320 0000021C 4831C0                      xor rax, rax
+   321                                  
+   322 0000021F E9E8FDFFFF                  jmp print_menu
+   323                                  
+   324                                  clear_in:
+   325                                      ;clears registers
+   326 00000224 4831C0                      xor rax, rax
+   327 00000227 4831FF                      xor rdi, rdi
+   328 0000022A 4831F6                      xor rsi, rsi
+   329 0000022D 4831D2                      xor rdx, rdx
